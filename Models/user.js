@@ -1,7 +1,17 @@
 const mongoose = require('mongoose')
+const passwordHash = require('password-hash');
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
+    _id:mongoose.Schema.Types.ObjectId,
+    firstName:{
+        type: String,
+        required: true
+    },
+    lastName:{
+        type: String,
+        required: true
+    },
     email:{
         type: String,
         required: true,
@@ -11,23 +21,45 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    token:{
+        type:String,
+        required:false,
+        unique:true
+    },
+    type:{
+        type:String,
+        required:false,
+        default:'User'
+    },
+    start: {
+		type: Date,
+		default: Date.now,
+		required: false
+	},
+    status: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
     cart:{
-        items: [{
-            prod_id:{
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'product',
-                required: true
-            },
-            qty:{
-                type: Number,
-                required: true
-            }
-        }],
+        items: [],
         totalPrice: Number
     }
 })
 
-UserSchema.methods.addToCart = function(product){
+// {
+//     prod_id:{
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: 'product',
+//         required: true
+//     },
+//     qty:{
+//         type: Number,
+//         required: true
+//     }
+// }
+
+UserSchema.methods.addToCart2 = function(product){
     let cart = this.cart
 
     if (cart.items.length == 0) {
@@ -51,6 +83,10 @@ UserSchema.methods.addToCart = function(product){
 
     console.log('User in schema: ', this);
     return this.save();
+}
+
+UserSchema.methods.comparePassword = function (candidatePassword) {
+    return passwordHash.verify(candidatePassword, this.password);
 }
 
 module.exports = mongoose.model('users', UserSchema)

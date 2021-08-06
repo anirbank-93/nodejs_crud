@@ -18,7 +18,7 @@ db.once('open', ()=>{
 
 // MIDDLEWARE
 app.use(express.static('public'))
-
+app.use(express.json());
 // create application/json parser
 var jsonParser = bodyParser.json()
  
